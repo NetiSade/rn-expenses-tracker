@@ -1,67 +1,26 @@
 import React from 'react';
 import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {CompositeNavigationProp} from '@react-navigation/native';
-import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
-import {MainTabParamList, RootStackParamList} from '../../navigation/types';
-import {useAppContext} from '../../context/AppContext';
-import {getTotalExpenses, groupExpensesByDate} from '../../utils/expenseUtils';
+
 import {Expense} from '../../types/expense';
 import ActiveFilters from '../../components/ActiveFilters';
+import {useHomeScreen} from './useHomeScreen';
 
-type HomeScreenNavigationProp = CompositeNavigationProp<
-  BottomTabNavigationProp<MainTabParamList, 'Home'>,
-  StackNavigationProp<RootStackParamList>
->;
-
-const HomeScreen: React.FC = () => {
-  const {expenses, userName, filterCriteria} = useAppContext();
-  const navigation = useNavigation<HomeScreenNavigationProp>();
-
-  const handleFilterPress = () => {
-    navigation.navigate('ExpensesFilter');
-  };
-
-  const filteredExpenses = expenses.filter(expense => {
-    if (!filterCriteria) {
-      return true;
-    }
-
-    const {title, minAmount, maxAmount, startDate, endDate} = filterCriteria;
-
-    if (title && !expense.title.toLowerCase().includes(title.toLowerCase())) {
-      return false;
-    }
-
-    if (minAmount && expense.amount < parseFloat(minAmount)) {
-      return false;
-    }
-
-    if (maxAmount && expense.amount > parseFloat(maxAmount)) {
-      return false;
-    }
-
-    const expenseDate = new Date(expense.date);
-
-    if (startDate && expenseDate < new Date(startDate)) {
-      return false;
-    }
-
-    if (endDate && expenseDate > new Date(endDate)) {
-      return false;
-    }
-
-    return true;
-  });
-
-  const groupedExpenses = groupExpensesByDate(filteredExpenses);
-  const totalExpenses = getTotalExpenses(filteredExpenses);
+const HomeScreen = () => {
+  const {
+    userName,
+    filterCriteria,
+    sortedGroupedExpenses,
+    filtersButtonTitle,
+    totalExpensesString,
+    handleExpensePress,
+    handleFilterPress,
+    handleCreateExpensePress,
+  } = useHomeScreen();
 
   const renderExpenseItem = ({item}: {item: Expense}) => (
     <TouchableOpacity
       style={styles.expenseItem}
-      onPress={() => navigation.navigate('CreateEditExpense', {expense: item})}>
+      onPress={() => handleExpensePress(item)}>
       <Text style={styles.expenseTitle}>{item.title}</Text>
       <Text style={styles.expenseAmount}>${item.amount.toFixed(2)}</Text>
     </TouchableOpacity>
@@ -86,26 +45,20 @@ const HomeScreen: React.FC = () => {
         onPress={handleFilterPress}
       />
       <Text style={styles.totalExpenses}>
-        Total Expenses: ${totalExpenses.toFixed(2)}
+        Total Expenses: ${totalExpensesString}
       </Text>
       <FlatList
-        data={Object.entries(groupedExpenses).sort((a, b) =>
-          b[0].localeCompare(a[0]),
-        )}
+        data={sortedGroupedExpenses}
         renderItem={renderDateGroup}
         keyExtractor={item => item[0]}
       />
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate('CreateEditExpense', {})}>
+        onPress={handleCreateExpensePress}>
         <Text style={styles.addButtonText}>Add Expense</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.filterButton}
-        onPress={() => navigation.navigate('ExpensesFilter')}>
-        <Text style={styles.filterButtonText}>
-          {filterCriteria ? 'Edit Filters' : 'Filter Expenses'}
-        </Text>
+      <TouchableOpacity style={styles.filterButton} onPress={handleFilterPress}>
+        <Text style={styles.filterButtonText}>{filtersButtonTitle}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -6,30 +6,18 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useAppContext} from '../../context/AppContext';
+
+import {useWelcomeScreen} from './useWelcomeScreen';
 
 const WelcomeScreen = () => {
-  const [fullName, setFullName] = useState('');
-  const {setUserName} = useAppContext();
-
-  const handleSubmit = async () => {
-    if (fullName.trim()) {
-      try {
-        await AsyncStorage.setItem('userFullName', fullName.trim());
-        setUserName(fullName.trim());
-      } catch (error) {
-        console.error('Error saving user name:', error);
-      }
-    }
-  };
+  const {fullName, handleSubmit, setFullName} = useWelcomeScreen();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Expense Tracker</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter your full name"
+        placeholder="Enter your name"
         value={fullName}
         onChangeText={setFullName}
       />

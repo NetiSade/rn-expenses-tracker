@@ -7,10 +7,10 @@ import WelcomeScreen from '../screens/welcome/WelcomeScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import {MainTabParamList, RootStackParamList} from './types';
-import CreateEditExpenseModal from '../modals/CreateEditExpenseModal';
-import ExpensesFilterModal from '../modals/ExpensesFilterModal';
+import CreateEditExpenseModal from '../modals/createEditExpenseModal/CreateEditExpenseModal';
+import ExpensesFilterModal from '../modals/expensesFilterModal/ExpensesFilterModal';
 import {useAppContext} from '../context/AppContext';
-import {ActivityIndicator, View} from 'react-native';
+import LoadingState from '../components/LoadingState';
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -26,11 +26,7 @@ const AppNavigator = () => {
   const {isLoading, userName} = useAppContext();
 
   if (isLoading) {
-    return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <LoadingState />;
   }
   return (
     <NavigationContainer>

@@ -4,7 +4,7 @@ import {FilterCriteria} from '../types/filterCriteria';
 
 interface AppContextType {
   expenses: Expense[];
-  addExpense: (expense: Expense) => Promise<void>;
+  addOrEditExpense: (expense: Expense, exist: boolean) => Promise<void>;
   deleteExpense: (id: string) => Promise<void>;
   filterCriteria: FilterCriteria | null;
   setFilterCriteria: React.Dispatch<

@@ -8,10 +8,7 @@ interface ActiveFiltersProps {
   onPress: () => void;
 }
 
-const ActiveFilters: React.FC<ActiveFiltersProps> = ({
-  filterCriteria,
-  onPress,
-}) => {
+const ActiveFilters = ({filterCriteria, onPress}: ActiveFiltersProps) => {
   if (!filterCriteria) {
     return null;
   }

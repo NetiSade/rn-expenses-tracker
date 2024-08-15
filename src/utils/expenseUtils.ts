@@ -1,22 +1,11 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {persistentService} from '../services/persistentService';
 import {Expense} from '../types/expense';
-
-const EXPENSES_STORAGE_KEY = 'expenses';
-
-export const saveExpense = async (expense: Expense): Promise<void> => {
-  try {
-    const expenses = await getExpenses();
-    expenses.push(expense);
-    await AsyncStorage.setItem(EXPENSES_STORAGE_KEY, JSON.stringify(expenses));
-  } catch (error) {
-    console.error('Error saving expense:', error);
-  }
-};
+import {FilterCriteria} from '../types/filterCriteria';
 
 export const getExpenses = async (): Promise<Expense[]> => {
   try {
-    const expensesJson = await AsyncStorage.getItem(EXPENSES_STORAGE_KEY);
-    return expensesJson ? JSON.parse(expensesJson) : [];
+    const expenses = await persistentService.getExpenses();
+    return expenses;
   } catch (error) {
     console.error('Error getting expenses:', error);
     return [];
@@ -38,4 +27,45 @@ export const groupExpensesByDate = (
     groups[date].push(expense);
     return groups;
   }, {} as Record<string, Expense[]>);
+};
+
+export const getSortedGroupedExpenses = (
+  groupedExpenses: Record<string, Expense[]>,
+) => Object.entries(groupedExpenses).sort((a, b) => b[0].localeCompare(a[0]));
+
+export const getFilteredExpenses = (
+  expenses: Expense[],
+  filterCriteria: FilterCriteria | null,
+) => {
+  return expenses.filter(expense => {
+    if (!filterCriteria) {
+      return true;
+    }
+
+    const {title, minAmount, maxAmount, startDate, endDate} = filterCriteria;
+
+    if (title && !expense.title.toLowerCase().includes(title.toLowerCase())) {
+      return false;
+    }
+
+    if (minAmount && expense.amount < parseFloat(minAmount)) {
+      return false;
+    }
+
+    if (maxAmount && expense.amount > parseFloat(maxAmount)) {
+      return false;
+    }
+
+    const expenseDate = new Date(expense.date);
+
+    if (startDate && expenseDate < new Date(startDate)) {
+      return false;
+    }
+
+    if (endDate && expenseDate > new Date(endDate)) {
+      return false;
+    }
+
+    return true;
+  });
 };

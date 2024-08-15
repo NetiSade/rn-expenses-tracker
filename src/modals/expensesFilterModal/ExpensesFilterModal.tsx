@@ -1,79 +1,36 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Platform,
 } from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import {useAppContext} from '../context/AppContext';
-import {RootStackParamList} from '../navigation/types';
-import {FilterCriteria} from '../types/filterCriteria';
+import {ExpensesFilterModalProps} from '../../navigation/types';
+import {useExpensesFilterModal} from './useExpensesFilterModal';
 
-type ExpensesFilterModalNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'ExpensesFilter'
->;
-
-interface Props {
-  navigation: ExpensesFilterModalNavigationProp;
-}
-
-const ExpensesFilterModal: React.FC<Props> = ({navigation}) => {
-  const {filterCriteria, setFilterCriteria} = useAppContext();
-  const [titleFilter, setTitleFilter] = useState(filterCriteria?.title || '');
-  const [minAmountFilter, setMinAmountFilter] = useState(
-    filterCriteria?.minAmount || '',
-  );
-  const [maxAmountFilter, setMaxAmountFilter] = useState(
-    filterCriteria?.maxAmount || '',
-  );
-  const [startDate, setStartDate] = useState<Date | null>(
-    filterCriteria?.startDate ? new Date(filterCriteria.startDate) : null,
-  );
-  const [endDate, setEndDate] = useState<Date | null>(
-    filterCriteria?.endDate ? new Date(filterCriteria.endDate) : null,
-  );
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
-
-  const handleFilter = () => {
-    const newFilterCriteria: FilterCriteria = {
-      title: titleFilter,
-      minAmount: minAmountFilter,
-      maxAmount: maxAmountFilter,
-      startDate: startDate ? startDate.toISOString() : null,
-      endDate: endDate ? endDate.toISOString() : null,
-    };
-    setFilterCriteria(newFilterCriteria);
-    navigation.goBack();
-  };
-
-  const handleClear = () => {
-    setTitleFilter('');
-    setMinAmountFilter('');
-    setMaxAmountFilter('');
-    setStartDate(null);
-    setEndDate(null);
-    setFilterCriteria(null);
-    navigation.goBack();
-  };
-
-  const handleDateChange =
-    (setDate: React.Dispatch<React.SetStateAction<Date | null>>) =>
-    (event: any, selectedDate?: Date) => {
-      const currentDate =
-        selectedDate || (setDate === setStartDate ? startDate : endDate);
-      setShowStartDatePicker(Platform.OS === 'ios');
-      setShowEndDatePicker(Platform.OS === 'ios');
-      if (currentDate) {
-        setDate(currentDate);
-      }
-    };
+const ExpensesFilterModal = (props: ExpensesFilterModalProps) => {
+  const {
+    titleFilter,
+    minAmountFilter,
+    maxAmountFilter,
+    startDate,
+    endDate,
+    showStartDatePicker,
+    showEndDatePicker,
+    setTitleFilter,
+    setMinAmountFilter,
+    setMaxAmountFilter,
+    setStartDate,
+    setEndDate,
+    setShowStartDatePicker,
+    setShowEndDatePicker,
+    handleFilter,
+    handleClear,
+    handleDateChange,
+  } = useExpensesFilterModal(props);
 
   return (
     <View style={styles.container}>

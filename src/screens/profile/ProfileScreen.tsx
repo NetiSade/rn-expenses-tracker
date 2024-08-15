@@ -1,32 +1,10 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Alert} from 'react-native';
-import {useAppContext} from '../../context/AppContext';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+
+import {useProfileScreen} from './useProfileScreen';
 
 const ProfileScreen = () => {
-  const {userName, expenses, signOut} = useAppContext();
-
-  const handleSignOut = async () => {
-    Alert.alert(
-      'Confirm Sign Out',
-      'Are you sure you want to sign out? This will remove all your data from this device.',
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await signOut();
-            } catch (error) {
-              console.error('Error signing out:', error);
-              Alert.alert('Error', 'Failed to sign out');
-            }
-          },
-        },
-      ],
-    );
-  };
-
+  const {expenses, userName, handleSignOut} = useProfileScreen();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>

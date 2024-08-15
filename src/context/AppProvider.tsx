@@ -1,12 +1,11 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {AppContext} from './AppContext';
 import {Expense} from '../types/expense';
 import {FilterCriteria} from '../types/filterCriteria';
+import {persistentService} from '../services/persistentService';
 
-export const AppProvider: React.FC<{children: React.ReactNode}> = ({
-  children,
-}) => {
+export const AppProvider = ({children}: {children: React.ReactNode}) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [filterCriteria, setFilterCriteria] = useState<FilterCriteria | null>(
     null,
@@ -20,12 +19,13 @@ export const AppProvider: React.FC<{children: React.ReactNode}> = ({
 
   const loadExpenses = useCallback(async () => {
     try {
-      const savedExpenses = await AsyncStorage.getItem('expenses');
+      const savedExpenses = await persistentService.getExpenses();
       if (savedExpenses) {
-        setExpenses(JSON.parse(savedExpenses));
+        setExpenses(savedExpenses);
       }
     } catch (error) {
       console.error('Error loading expenses:', error);
+      setExpenses([]);
     }
   }, []);
 
@@ -33,11 +33,12 @@ export const AppProvider: React.FC<{children: React.ReactNode}> = ({
     if (userName) {
       loadExpenses().then(() => setIsLoading(false));
     }
-  }, [loadExpenses, filterCriteria, userName]);
+  }, [loadExpenses, userName]);
 
   const loadUserName = async () => {
     try {
-      const savedName = await AsyncStorage.getItem('userFullName');
+      const savedName = await persistentService.getUserName();
+
       if (savedName) {
         setUserName(savedName);
       }
@@ -51,14 +52,24 @@ export const AppProvider: React.FC<{children: React.ReactNode}> = ({
   const saveExpenses = async (newExpenses: Expense[]) => {
     setExpenses(newExpenses);
     try {
-      await AsyncStorage.setItem('expenses', JSON.stringify(newExpenses));
+      await persistentService.setExpenses(newExpenses);
     } catch (error) {
       console.error('Error saving expenses:', error);
     }
   };
 
-  const addExpense = async (expense: Expense) => {
+  const addOrEditExpense = async (expense: Expense, exist: boolean) => {
+    if (exist) {
+      await overrideExpense(expense);
+      return;
+    }
     const newExpenses = [...expenses, expense];
+    await saveExpenses(newExpenses);
+  };
+
+  const overrideExpense = async (expense: Expense) => {
+    const newExpenses = expenses.filter(e => e.id !== expense.id);
+    newExpenses.push(expense);
     await saveExpenses(newExpenses);
   };
 
@@ -67,15 +78,19 @@ export const AppProvider: React.FC<{children: React.ReactNode}> = ({
     await saveExpenses(newExpenses);
   };
 
-  const signOut = async () => {
+  const clearState = () => {
     setUserName('');
     setExpenses([]);
     setFilterCriteria(null);
+  };
+
+  const signOut = async () => {
+    clearState();
     try {
-      await AsyncStorage.removeItem('userFullName');
-      await AsyncStorage.removeItem('expenses');
+      persistentService.clearUserData();
     } catch (error) {
       console.error('Error signing out:', error);
+      throw error;
     }
   };
 
@@ -83,7 +98,7 @@ export const AppProvider: React.FC<{children: React.ReactNode}> = ({
     <AppContext.Provider
       value={{
         expenses,
-        addExpense,
+        addOrEditExpense,
         deleteExpense,
         filterCriteria,
         setFilterCriteria,
