@@ -12,14 +12,17 @@ export const useCreateEditExpenseModal = ({
   const {addOrEditExpense, deleteExpense} = useAppContext();
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(new Date());
-
   const existingExpense = route.params?.expense;
+
+  const [date, setDate] = useState(
+    existingExpense ? new Date(existingExpense.date) : new Date(),
+  );
 
   useEffect(() => {
     if (existingExpense) {
       setTitle(existingExpense.title);
       setAmount(existingExpense.amount.toString());
+      setDate(new Date(existingExpense.date));
     }
   }, [existingExpense]);
 
@@ -33,7 +36,7 @@ export const useCreateEditExpenseModal = ({
       id: existingExpense?.id || Date.now().toString(),
       title: title.trim(),
       amount: parseFloat(amount),
-      date: date.toLocaleDateString(),
+      date: date.toISOString(),
     };
 
     try {

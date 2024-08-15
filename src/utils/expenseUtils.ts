@@ -20,7 +20,7 @@ export const groupExpensesByDate = (
   expenses: Expense[],
 ): Record<string, Expense[]> => {
   return expenses.reduce((groups, expense) => {
-    const date = expense.date.split('T')[0]; // Get date part only
+    const date = new Date(expense.date).toLocaleDateString();
     if (!groups[date]) {
       groups[date] = [];
     }

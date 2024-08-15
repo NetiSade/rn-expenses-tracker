@@ -40,12 +40,10 @@ const CreateEditExpenseModal = (props: CreateEditExpenseModalProps) => {
         keyboardType="numeric"
         maxLength={10}
       />
-      {existingExpense && (
-        <CustomText>{`date: ${existingExpense.date}`}</CustomText>
-      )}
+
       <View style={styles.dateContainer}>
         <CustomDatePicker
-          initialDate={existingExpense ? undefined : date}
+          initialDate={date}
           title={existingExpense ? 'Change Date' : 'Date'}
           onDateChange={setDate}
         />
