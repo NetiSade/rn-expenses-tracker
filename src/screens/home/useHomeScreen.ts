@@ -14,6 +14,8 @@ import {useCallback, useMemo} from 'react';
 export const useHomeScreen = () => {
   const {expenses, userName, filterCriteria} = useAppContext();
 
+  const showFilterButton = expenses.length > 0;
+
   const filteredExpenses = useMemo(
     () => getFilteredExpenses(expenses, filterCriteria),
     [expenses, filterCriteria],
@@ -63,6 +65,7 @@ export const useHomeScreen = () => {
     sortedGroupedExpenses,
     filtersButtonTitle,
     totalExpensesString,
+    showFilterButton,
     handleFilterPress,
     handleExpensePress,
     handleCreateExpensePress,

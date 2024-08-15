@@ -1,68 +1,62 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
 
 import {CreateEditExpenseModalProps} from '../../navigation/types';
 import {useCreateEditExpenseModal} from './useCreateEditExpenseModal';
+import CustomText from '../../components/CustomText';
+import CustomTextInput from '../../components/CustomTextInput';
+import {CustomDatePicker} from '../../components/CustomDatePicker';
 
 const CreateEditExpenseModal = (props: CreateEditExpenseModalProps) => {
   const {
     amount,
     title,
     existingExpense,
-    isDatePickerShown,
     date,
     setTitle,
     setAmount,
-    handleDateChange,
+    setDate,
     handleDelete,
     handleSave,
-    toggleDatePicker,
   } = useCreateEditExpenseModal(props);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
+      <CustomText style={styles.title}>
         {existingExpense ? 'Edit Expense' : 'Create Expense'}
-      </Text>
-      <TextInput
+      </CustomText>
+      <CustomTextInput
         style={styles.input}
         placeholder="Title"
-        placeholderTextColor="#999"
         value={title}
         onChangeText={setTitle}
+        maxLength={50}
       />
-      <TextInput
+      <CustomTextInput
         style={styles.input}
-        placeholder="Amount"
-        placeholderTextColor="#999"
+        placeholder="Amount (USD)"
         value={amount}
         onChangeText={setAmount}
         keyboardType="numeric"
+        maxLength={10}
       />
-      <TouchableOpacity style={styles.dateButton} onPress={toggleDatePicker}>
-        <Text>{date.toLocaleDateString()}</Text>
-      </TouchableOpacity>
-      {isDatePickerShown && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
+      {existingExpense && (
+        <CustomText>{`date: ${existingExpense.date}`}</CustomText>
       )}
+      <View style={styles.dateContainer}>
+        <CustomDatePicker
+          initialDate={existingExpense ? undefined : date}
+          title={existingExpense ? 'Change Date' : 'Date'}
+          onDateChange={setDate}
+        />
+      </View>
+
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.buttonText}>Save</Text>
+        <CustomText style={styles.buttonText}>Save</CustomText>
       </TouchableOpacity>
       {existingExpense && (
         <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-          <Text style={styles.buttonText}>Delete</Text>
+          <CustomText style={styles.buttonText}>Delete</CustomText>
         </TouchableOpacity>
       )}
     </View>
@@ -88,20 +82,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
-  dateButton: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 20,
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    marginVertical: 10,
   },
   saveButton: {
     backgroundColor: '#007AFF',
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
+    marginTop: 20,
     marginBottom: 10,
   },
   deleteButton: {

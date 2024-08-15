@@ -1,28 +1,24 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
 
 import {useWelcomeScreen} from './useWelcomeScreen';
+import CustomText from '../../components/CustomText';
+import CustomTextInput from '../../components/CustomTextInput';
 
 const WelcomeScreen = () => {
   const {fullName, handleSubmit, setFullName} = useWelcomeScreen();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Expense Tracker</Text>
-      <TextInput
+      <CustomText style={styles.title}>Welcome to Expense Tracker</CustomText>
+      <CustomTextInput
         style={styles.input}
         placeholder="Enter your name"
         value={fullName}
         onChangeText={setFullName}
       />
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit</Text>
+        <CustomText style={styles.buttonText}>Submit</CustomText>
       </TouchableOpacity>
     </View>
   );

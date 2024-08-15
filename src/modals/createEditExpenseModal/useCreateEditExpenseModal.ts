@@ -13,7 +13,6 @@ export const useCreateEditExpenseModal = ({
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(new Date());
-  const [isDatePickerShown, setIsDatePickerShown] = useState(false);
 
   const existingExpense = route.params?.expense;
 
@@ -21,7 +20,6 @@ export const useCreateEditExpenseModal = ({
     if (existingExpense) {
       setTitle(existingExpense.title);
       setAmount(existingExpense.amount.toString());
-      setDate(new Date(existingExpense.date));
     }
   }, [existingExpense]);
 
@@ -35,7 +33,7 @@ export const useCreateEditExpenseModal = ({
       id: existingExpense?.id || Date.now().toString(),
       title: title.trim(),
       amount: parseFloat(amount),
-      date: date.toISOString(),
+      date: date.toLocaleDateString(),
     };
 
     try {
@@ -74,31 +72,15 @@ export const useCreateEditExpenseModal = ({
     );
   }, [deleteExpense, existingExpense, navigation]);
 
-  const handleDateChange = useCallback(
-    (event: any, selectedDate: Date | undefined) => {
-      setIsDatePickerShown(false);
-      if (selectedDate) {
-        setDate(selectedDate);
-      }
-    },
-    [],
-  );
-
-  const toggleDatePicker = useCallback(() => {
-    setIsDatePickerShown(prevState => !prevState);
-  }, []);
-
   return {
     existingExpense,
     title,
     amount,
-    isDatePickerShown,
     date,
+    setDate,
     setTitle,
     setAmount,
-    handleDateChange,
     handleDelete,
     handleSave,
-    toggleDatePicker,
   };
 };

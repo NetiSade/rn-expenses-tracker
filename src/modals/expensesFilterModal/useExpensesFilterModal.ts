@@ -1,6 +1,6 @@
 import {useState} from 'react';
+
 import {useAppContext} from '../../context/AppContext';
-import {Platform} from 'react-native';
 import {FilterCriteria} from '../../types/filterCriteria';
 import {ExpensesFilterModalProps} from '../../navigation/types';
 
@@ -15,14 +15,12 @@ export const useExpensesFilterModal = ({
   const [maxAmountFilter, setMaxAmountFilter] = useState(
     filterCriteria?.maxAmount || '',
   );
-  const [startDate, setStartDate] = useState<Date | null>(
-    filterCriteria?.startDate ? new Date(filterCriteria.startDate) : null,
+  const [startDate, setStartDate] = useState<Date | undefined>(
+    filterCriteria?.startDate ? new Date(filterCriteria.startDate) : undefined,
   );
-  const [endDate, setEndDate] = useState<Date | null>(
-    filterCriteria?.endDate ? new Date(filterCriteria.endDate) : null,
+  const [endDate, setEndDate] = useState<Date | undefined>(
+    filterCriteria?.endDate ? new Date(filterCriteria.endDate) : undefined,
   );
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
   const handleFilter = () => {
     const newFilterCriteria: FilterCriteria = {
@@ -40,41 +38,24 @@ export const useExpensesFilterModal = ({
     setTitleFilter('');
     setMinAmountFilter('');
     setMaxAmountFilter('');
-    setStartDate(null);
-    setEndDate(null);
+    setStartDate(undefined);
+    setEndDate(undefined);
     setFilterCriteria(null);
     navigation.goBack();
   };
 
-  const handleDateChange =
-    (setDate: React.Dispatch<React.SetStateAction<Date | null>>) =>
-    (event: any, selectedDate?: Date) => {
-      const currentDate =
-        selectedDate || (setDate === setStartDate ? startDate : endDate);
-      setShowStartDatePicker(Platform.OS === 'ios');
-      setShowEndDatePicker(Platform.OS === 'ios');
-      if (currentDate) {
-        setDate(currentDate);
-      }
-    };
-
   return {
     titleFilter,
-    setTitleFilter,
     minAmountFilter,
-    setMinAmountFilter,
     maxAmountFilter,
-    setMaxAmountFilter,
     startDate,
-    setStartDate,
     endDate,
+    setTitleFilter,
+    setMinAmountFilter,
+    setMaxAmountFilter,
+    setStartDate,
     setEndDate,
-    showStartDatePicker,
-    setShowStartDatePicker,
-    showEndDatePicker,
-    setShowEndDatePicker,
     handleFilter,
     handleClear,
-    handleDateChange,
   };
 };

@@ -1,9 +1,10 @@
 import React from 'react';
-import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
 
 import {Expense} from '../../types/expense';
 import ActiveFilters from '../../components/ActiveFilters';
 import {useHomeScreen} from './useHomeScreen';
+import CustomText from '../../components/CustomText';
 
 const HomeScreen = () => {
   const {
@@ -12,6 +13,7 @@ const HomeScreen = () => {
     sortedGroupedExpenses,
     filtersButtonTitle,
     totalExpensesString,
+    showFilterButton,
     handleExpensePress,
     handleFilterPress,
     handleCreateExpensePress,
@@ -21,14 +23,16 @@ const HomeScreen = () => {
     <TouchableOpacity
       style={styles.expenseItem}
       onPress={() => handleExpensePress(item)}>
-      <Text style={styles.expenseTitle}>{item.title}</Text>
-      <Text style={styles.expenseAmount}>${item.amount.toFixed(2)}</Text>
+      <CustomText style={styles.expenseTitle}>{item.title}</CustomText>
+      <CustomText style={styles.expenseAmount}>
+        ${item.amount.toFixed(2)}
+      </CustomText>
     </TouchableOpacity>
   );
 
   const renderDateGroup = ({item}: {item: [string, Expense[]]}) => (
     <View style={styles.dateGroup}>
-      <Text style={styles.dateHeader}>{item[0]}</Text>
+      <CustomText style={styles.dateHeader}>{item[0]}</CustomText>
       <FlatList
         data={item[1]}
         renderItem={renderExpenseItem}
@@ -39,15 +43,16 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome, {userName}</Text>
+      <CustomText style={styles.welcomeText}>Welcome, {userName}</CustomText>
       <ActiveFilters
         filterCriteria={filterCriteria}
         onPress={handleFilterPress}
       />
-      <Text style={styles.totalExpenses}>
+      <CustomText style={styles.totalExpenses}>
         Total Expenses: ${totalExpensesString}
-      </Text>
+      </CustomText>
       <FlatList
+        style={styles.list}
         data={sortedGroupedExpenses}
         renderItem={renderDateGroup}
         keyExtractor={item => item[0]}
@@ -55,11 +60,17 @@ const HomeScreen = () => {
       <TouchableOpacity
         style={styles.addButton}
         onPress={handleCreateExpensePress}>
-        <Text style={styles.addButtonText}>Add Expense</Text>
+        <CustomText style={styles.addButtonText}>Add Expense</CustomText>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.filterButton} onPress={handleFilterPress}>
-        <Text style={styles.filterButtonText}>{filtersButtonTitle}</Text>
-      </TouchableOpacity>
+      {showFilterButton && (
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={handleFilterPress}>
+          <CustomText style={styles.filterButtonText}>
+            {filtersButtonTitle}
+          </CustomText>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -86,12 +97,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
+  list: {
+    marginHorizontal: 8,
+    marginTop: 10,
+  },
   expenseItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'lightgray',
     borderRadius: 5,
     marginBottom: 5,
   },

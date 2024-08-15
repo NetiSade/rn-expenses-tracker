@@ -1,7 +1,8 @@
 // src/components/ActiveFilters.tsx
 import React from 'react';
-import {Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import {FilterCriteria} from '../types/filterCriteria';
+import CustomText from './CustomText';
 
 interface ActiveFiltersProps {
   filterCriteria: FilterCriteria | null;
@@ -17,19 +18,23 @@ const ActiveFilters = ({filterCriteria, onPress}: ActiveFiltersProps) => {
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Text style={styles.title}>Active Filters:</Text>
-      {title && <Text style={styles.filter}>Title: {title}</Text>}
-      {minAmount && <Text style={styles.filter}>Min Amount: ${minAmount}</Text>}
-      {maxAmount && <Text style={styles.filter}>Max Amount: ${maxAmount}</Text>}
+      <CustomText style={styles.title}>Active Filters:</CustomText>
+      {title && <CustomText style={styles.filter}>Title: {title}</CustomText>}
+      {minAmount && (
+        <CustomText style={styles.filter}>Min Amount: ${minAmount}</CustomText>
+      )}
+      {maxAmount && (
+        <CustomText style={styles.filter}>Max Amount: ${maxAmount}</CustomText>
+      )}
       {startDate && (
-        <Text style={styles.filter}>
+        <CustomText style={styles.filter}>
           Start Date: {new Date(startDate).toLocaleDateString()}
-        </Text>
+        </CustomText>
       )}
       {endDate && (
-        <Text style={styles.filter}>
+        <CustomText style={styles.filter}>
           End Date: {new Date(endDate).toLocaleDateString()}
-        </Text>
+        </CustomText>
       )}
     </TouchableOpacity>
   );

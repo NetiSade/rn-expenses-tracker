@@ -1,5 +1,5 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
@@ -11,14 +11,33 @@ import CreateEditExpenseModal from '../modals/createEditExpenseModal/CreateEditE
 import ExpensesFilterModal from '../modals/expensesFilterModal/ExpensesFilterModal';
 import {useAppContext} from '../context/AppContext';
 import LoadingState from '../components/LoadingState';
+import {
+  createEditExpenseModalScreenOptions,
+  expensesFilterModalScreenOptions,
+  homeTabOptions,
+  mainTabsScreenOptions,
+  profileTabOptions,
+} from './screenOptions';
+
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    text: 'black',
+  },
+};
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const MainTabs = () => (
   <Tab.Navigator>
-    <Tab.Screen name="Home" component={HomeScreen} />
-    <Tab.Screen name="Profile" component={ProfileScreen} />
+    <Tab.Screen name="Home" component={HomeScreen} options={homeTabOptions} />
+    <Tab.Screen
+      name="Profile"
+      component={ProfileScreen}
+      options={profileTabOptions}
+    />
   </Tab.Navigator>
 );
 
@@ -29,22 +48,26 @@ const AppNavigator = () => {
     return <LoadingState />;
   }
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={MyTheme}>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {!userName ? (
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
         ) : (
-          <Stack.Screen name="MainTabs" component={MainTabs} />
+          <Stack.Screen
+            name="MainTabs"
+            component={MainTabs}
+            options={mainTabsScreenOptions}
+          />
         )}
         <Stack.Screen
           name="CreateEditExpense"
           component={CreateEditExpenseModal}
-          options={{presentation: 'modal'}}
+          options={createEditExpenseModalScreenOptions}
         />
         <Stack.Screen
           name="ExpensesFilter"
           component={ExpensesFilterModal}
-          options={{presentation: 'modal'}}
+          options={expensesFilterModalScreenOptions}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,17 +1,22 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
 
 import {useProfileScreen} from './useProfileScreen';
+import CustomText from '../../components/CustomText';
 
 const ProfileScreen = () => {
   const {expenses, userName, handleSignOut} = useProfileScreen();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-      <Text style={styles.info}>Name: {userName}</Text>
-      <Text style={styles.info}>Total Expenses: {expenses.length}</Text>
+      <View style={styles.infoContainer}>
+        <CustomText style={styles.info}>Name: {userName}</CustomText>
+        <CustomText style={styles.info}>
+          Total Expenses: {expenses.length}
+        </CustomText>
+      </View>
+
       <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-        <Text style={styles.signOutButtonText}>Sign Out</Text>
+        <CustomText style={styles.signOutButtonText}>Sign Out</CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -22,11 +27,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: 'white',
+    justifyContent: 'space-around',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  infoContainer: {
+    marginBottom: 10,
   },
   info: {
     fontSize: 18,

@@ -1,15 +1,11 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
 
 import {ExpensesFilterModalProps} from '../../navigation/types';
 import {useExpensesFilterModal} from './useExpensesFilterModal';
+import CustomText from '../../components/CustomText';
+import CustomTextInput from '../../components/CustomTextInput';
+import {CustomDatePicker} from '../../components/CustomDatePicker';
 
 const ExpensesFilterModal = (props: ExpensesFilterModalProps) => {
   const {
@@ -18,83 +14,62 @@ const ExpensesFilterModal = (props: ExpensesFilterModalProps) => {
     maxAmountFilter,
     startDate,
     endDate,
-    showStartDatePicker,
-    showEndDatePicker,
     setTitleFilter,
     setMinAmountFilter,
     setMaxAmountFilter,
     setStartDate,
     setEndDate,
-    setShowStartDatePicker,
-    setShowEndDatePicker,
     handleFilter,
     handleClear,
-    handleDateChange,
   } = useExpensesFilterModal(props);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Filter Expenses</Text>
-      <TextInput
+      <CustomText style={styles.title}>Filter Expenses</CustomText>
+      <CustomTextInput
         style={styles.input}
         placeholder="Filter by title"
-        placeholderTextColor="#999"
         value={titleFilter}
         onChangeText={setTitleFilter}
       />
       <View style={styles.amountContainer}>
-        <TextInput
+        <CustomTextInput
           style={[styles.input, styles.amountInput]}
           placeholder="Min amount"
-          placeholderTextColor="#999"
           value={minAmountFilter}
           onChangeText={setMinAmountFilter}
           keyboardType="numeric"
         />
-        <TextInput
+        <CustomTextInput
           style={[styles.input, styles.amountInput]}
           placeholder="Max amount"
-          placeholderTextColor="#999"
           value={maxAmountFilter}
           onChangeText={setMaxAmountFilter}
           keyboardType="numeric"
         />
       </View>
-      <TouchableOpacity
-        style={styles.dateButton}
-        onPress={() => setShowStartDatePicker(true)}>
-        <Text style={styles.dateButtonText}>
-          {startDate ? startDate.toLocaleDateString() : 'Select Start Date'}
-        </Text>
-      </TouchableOpacity>
-      {showStartDatePicker && (
-        <DateTimePicker
-          value={startDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={handleDateChange(setStartDate)}
+
+      <View style={styles.datesContainer}>
+        <CustomDatePicker
+          initialDate={startDate}
+          onDateChange={setStartDate}
+          title="From Date"
+          maximumDate={endDate}
         />
-      )}
-      <TouchableOpacity
-        style={styles.dateButton}
-        onPress={() => setShowEndDatePicker(true)}>
-        <Text style={styles.dateButtonText}>
-          {endDate ? endDate.toLocaleDateString() : 'Select End Date'}
-        </Text>
-      </TouchableOpacity>
-      {showEndDatePicker && (
-        <DateTimePicker
-          value={endDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={handleDateChange(setEndDate)}
+
+        <CustomDatePicker
+          initialDate={endDate}
+          onDateChange={setEndDate}
+          title="Until Date"
+          minimumDate={startDate}
         />
-      )}
+      </View>
+
       <TouchableOpacity style={styles.filterButton} onPress={handleFilter}>
-        <Text style={styles.buttonText}>Apply Filters</Text>
+        <CustomText style={styles.buttonText}>Apply Filters</CustomText>
       </TouchableOpacity>
       <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
-        <Text style={styles.buttonText}>Clear Filters</Text>
+        <CustomText style={styles.buttonText}>Clear Filters</CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -125,23 +100,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  datesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
   amountInput: {
     width: '48%',
   },
-  dateButton: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    justifyContent: 'center',
-    paddingHorizontal: 10,
-  },
-  dateButtonText: {
-    fontSize: 16,
-    color: 'black',
-  },
   filterButton: {
+    marginTop: 20,
     backgroundColor: '#007AFF',
     padding: 15,
     borderRadius: 5,
